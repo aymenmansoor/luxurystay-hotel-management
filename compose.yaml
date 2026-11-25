@@ -1,0 +1,30 @@
+services:
+  mongo:
+    image: mongo:8.0
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+    ulimits:
+      nofile:
+        soft: 8192
+        hard: 16384
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "try { if (!db.hello().isWritablePrimary) quit(1) } catch { quit(1) }"]
+      interval: 15s
+      start_period: 20s
+      start_interval: 2s
+      timeout: 5s
+      retries: 8
+  mongo-init:
+    image: mongo:8.0
+    depends_on:
+      - mongo
+    entrypoint: ["mongosh", "--host", "mongo:27017", "--quiet", "--eval"]
+    command:
+      - 'try { rs.status() } catch (error) { if (error.code !== 94) throw error; rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]}) }'
+    restart: on-failure
+volumes:
+  mongo-data:
