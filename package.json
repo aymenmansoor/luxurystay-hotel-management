@@ -1,0 +1,28 @@
+{
+  "name": "luxurystay-intelligence",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --watch apps/api/src/server.js",
+    "web": "npm run dev -w @luxurystay/web",
+    "build": "npm run build -w @luxurystay/web",
+    "seed": "node --env-file-if-exists=.env apps/api/src/seed.js",
+    "test": "node --env-file-if-exists=.env --test apps/api/test/*.test.js",
+    "start": "node --env-file-if-exists=.env apps/api/src/server.js",
+    "bootstrap:admin": "node --env-file-if-exists=.env apps/api/src/bootstrap-admin.js",
+    "test:browser": "playwright test",
+    "lint": "eslint apps browser playwright.config.js"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
+    "eslint": "^10.15.0",
+    "globals": "^17.14.0"
+  }
+}
